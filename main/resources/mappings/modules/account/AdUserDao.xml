@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.account.dao.AdUserDao">
+    
+	<sql id="adUserColumns">
+		a.id AS "id",
+		a.group_num AS "groupNum",
+		a.card_number AS "cardNumber",
+		a.sex AS "sex",
+		a.name AS "name",
+		a.telephone AS "telephone",
+		a.mailbox AS "mailbox",
+		a.identity_card AS "identityCard",
+		a.password AS "password",
+		a.pay_password AS "payPassword",
+		a.integral AS "integral",
+		a.start_integral AS "startIntegral",
+		a.expect_integral AS "expectIntegral",
+		a.line_credit AS "lineCredit",
+		a.is_active AS "isActive",
+		a.is_pay_password AS "isPayPassword",
+		a.type AS "type",
+		a.create_by AS "createBy.id",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="adUserJoins">
+	</sql>
+    
+	<select id="get" resultType="AdUser">
+		SELECT 
+			<include refid="adUserColumns"/>
+		FROM ad_user a
+		<include refid="adUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AdUser">
+		SELECT 
+			<include refid="adUserColumns"/>
+		FROM ad_user a
+		<include refid="adUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="groupNum != null and groupNum != ''">
+				AND a.group_num = #{groupNum}
+			</if>
+			<if test="cardNumber != null and cardNumber != ''">
+				AND a.card_number = #{cardNumber}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="isActive != null and isActive != ''">
+				AND a.is_active = #{isActive}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AdUser">
+		SELECT 
+			<include refid="adUserColumns"/>
+		FROM ad_user a
+		<include refid="adUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ad_user(
+			id,
+			group_num,
+			card_number,
+			sex,
+			name,
+			telephone,
+			mailbox,
+			identity_card,
+			password,
+			pay_password,
+			integral,
+			start_integral,
+			expect_integral,
+			line_credit,
+			is_active,
+			is_pay_password,
+			type,
+			create_by,
+			del_flag,
+			remarks,
+			update_date,
+			update_by,
+			create_date
+		) VALUES (
+			#{id},
+			#{groupNum},
+			#{cardNumber},
+			#{sex},
+			#{name},
+			#{telephone},
+			#{mailbox},
+			#{identityCard},
+			#{password},
+			#{payPassword},
+			#{integral},
+			#{startIntegral},
+			#{expectIntegral},
+			#{lineCredit},
+			#{isActive},
+			#{isPayPassword},
+			#{type},
+			#{createBy.id},
+			#{delFlag},
+			#{remarks},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ad_user SET 	
+			group_num = #{groupNum},
+			card_number = #{cardNumber},
+			sex = #{sex},
+			name = #{name},
+			telephone = #{telephone},
+			mailbox = #{mailbox},
+			identity_card = #{identityCard},
+			password = #{password},
+			pay_password = #{payPassword},
+			integral = #{integral},
+			start_integral = #{startIntegral},
+			expect_integral = #{expectIntegral},
+			line_credit = #{lineCredit},
+			is_active = #{isActive},
+			is_pay_password = #{isPayPassword},
+			type = #{type},
+			remarks = #{remarks},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ad_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

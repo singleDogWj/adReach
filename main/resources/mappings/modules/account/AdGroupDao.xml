@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.account.dao.AdGroupDao">
+    
+	<sql id="adGroupColumns">
+		a.id AS "id",
+		a.group_name AS "groupName",
+		a.group_num AS "groupNum",
+		a.is_active AS "isActive",
+		a.official_integral AS "officialIntegral",
+		a.official_number AS "officialNumber",
+		a.relation_start_no AS "relationStartNo",
+		a.relation_end_no AS "relationEndNo",
+		a.super_group_id AS "superGroupId",
+		a.ud_id AS "udId",
+		a.un_official_integral AS "unOfficialIntegral",
+		a.create_by AS "createBy.id",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="adGroupJoins">
+	</sql>
+    
+	<select id="get" resultType="AdGroup">
+		SELECT 
+			<include refid="adGroupColumns"/>
+		FROM ad_group a
+		<include refid="adGroupJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AdGroup">
+		SELECT 
+			<include refid="adGroupColumns"/>
+		FROM ad_group a
+		<include refid="adGroupJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{groupName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{groupName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{groupName},'%')</if>
+			</if>
+			<if test="groupNum != null and groupNum != ''">
+				AND a.group_num = #{groupNum}
+			</if>
+			<if test="isActive != null and isActive != ''">
+				AND a.is_active = #{isActive}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AdGroup">
+		SELECT 
+			<include refid="adGroupColumns"/>
+		FROM ad_group a
+		<include refid="adGroupJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ad_group(
+			id,
+			group_name,
+			group_num,
+			is_active,
+			official_integral,
+			official_number,
+			relation_start_no,
+			relation_end_no,
+			super_group_id,
+			ud_id,
+			un_official_integral,
+			create_by,
+			del_flag,
+			remarks,
+			update_date,
+			update_by,
+			create_date
+		) VALUES (
+			#{id},
+			#{groupName},
+			#{groupNum},
+			#{isActive},
+			#{officialIntegral},
+			#{officialNumber},
+			#{relationStartNo},
+			#{relationEndNo},
+			#{superGroupId},
+			#{udId},
+			#{unOfficialIntegral},
+			#{createBy.id},
+			#{delFlag},
+			#{remarks},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ad_group SET 	
+			group_name = #{groupName},
+			group_num = #{groupNum},
+			is_active = #{isActive},
+			official_integral = #{officialIntegral},
+			official_number = #{officialNumber},
+			relation_start_no = #{relationStartNo},
+			relation_end_no = #{relationEndNo},
+			super_group_id = #{superGroupId},
+			ud_id = #{udId},
+			un_official_integral = #{unOfficialIntegral},
+			remarks = #{remarks},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ad_group SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

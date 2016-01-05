@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.account.dao.AdBusinessDao">
+    
+	<sql id="adBusinessColumns">
+		a.id AS "id",
+		a.company AS "company",
+		a.type AS "type",
+		a.logo AS "logo",
+		a.url AS "url",
+		a.business_id AS "businessId",
+		a.user_name AS "userName",
+		a.password AS "password",
+		a.user_rebate AS "userRebate",
+		a.bussiness_rebate AS "bussinessRebate",
+		a.union_login AS "unionLogin",
+		a.data_synchronization AS "dataSynchronization",
+		a.bussiness_rebate_type AS "bussinessRebateType",
+		a.user_rebate_type AS "userRebateType",
+		a.memo AS "memo",
+		a.is_active AS "isActive",
+		a.create_by AS "createBy.id",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="adBusinessJoins">
+	</sql>
+    
+	<select id="get" resultType="AdBusiness">
+		SELECT 
+			<include refid="adBusinessColumns"/>
+		FROM ad_business a
+		<include refid="adBusinessJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AdBusiness">
+		SELECT 
+			<include refid="adBusinessColumns"/>
+		FROM ad_business a
+		<include refid="adBusinessJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="company != null and company != ''">
+				AND a.company LIKE 
+					<if test="dbName == 'oracle'">'%'||#{company}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{company}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{company},'%')</if>
+			</if>
+			<if test="businessId != null and businessId != ''">
+				AND a.business_id = #{businessId}
+			</if>
+			<if test="userRebateType != null and userRebateType != ''">
+				AND a.user_rebate_type = #{userRebateType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AdBusiness">
+		SELECT 
+			<include refid="adBusinessColumns"/>
+		FROM ad_business a
+		<include refid="adBusinessJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ad_business(
+			id,
+			company,
+			type,
+			logo,
+			url,
+			business_id,
+			user_name,
+			password,
+			user_rebate,
+			bussiness_rebate,
+			union_login,
+			data_synchronization,
+			bussiness_rebate_type,
+			user_rebate_type,
+			memo,
+			is_active,
+			create_by,
+			del_flag,
+			remarks,
+			update_date,
+			update_by,
+			create_date
+		) VALUES (
+			#{id},
+			#{company},
+			#{type},
+			#{logo},
+			#{url},
+			#{businessId},
+			#{userName},
+			#{password},
+			#{userRebate},
+			#{bussinessRebate},
+			#{unionLogin},
+			#{dataSynchronization},
+			#{bussinessRebateType},
+			#{userRebateType},
+			#{memo},
+			#{isActive},
+			#{createBy.id},
+			#{delFlag},
+			#{remarks},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ad_business SET 	
+			company = #{company},
+			type = #{type},
+			logo = #{logo},
+			url = #{url},
+			business_id = #{businessId},
+			user_name = #{userName},
+			password = #{password},
+			user_rebate = #{userRebate},
+			bussiness_rebate = #{bussinessRebate},
+			union_login = #{unionLogin},
+			data_synchronization = #{dataSynchronization},
+			bussiness_rebate_type = #{bussinessRebateType},
+			user_rebate_type = #{userRebateType},
+			memo = #{memo},
+			is_active = #{isActive},
+			remarks = #{remarks},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ad_business SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
